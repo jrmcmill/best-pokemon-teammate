@@ -35,10 +35,6 @@ class PokemonGraph:
         sorted_scores = dict(sorted(scores.items(), key=lambda score: score[1], reverse=True))
         
         return sorted_scores
-    
-    def find_best_teammate(self, type: str=None, stat: str=None, stat_value: int=None) -> list[str]:
-        self.get_pagerank(self.graph)  # need to add sorting by PageRank scores
-        # and filtering by type and stat OR base-stat total (BST)
 
 
 if __name__ == '__main__':
