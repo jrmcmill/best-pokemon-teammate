@@ -53,8 +53,14 @@ class PokemonData:
         
         return np.array(all_pokemon_gxe, dtype=object)
     
-    def get_all_data(self) -> dict[str: list[str]]:
-        return self.ps_data['data']
+    def get_team_data(self) -> dict[str: list[str]]:
+        data = self.ps_data['data']
+        teammate_data = {}
+
+        for pokemon in data.keys():
+            teammate_data[pokemon] = data[pokemon]['Teammates']
+        
+        return teammate_data
 
 
 # # RUN TESTS ON GETTING THE DATA

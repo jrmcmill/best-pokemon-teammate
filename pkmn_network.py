@@ -31,7 +31,9 @@ class PokemonGraph:
     
     @staticmethod
     def get_pagerank(graph: nx.DiGraph=None) -> dict[str: float]:
-        return nx.pagerank(graph)
+        scores = nx.pagerank(graph.graph)
+        sorted_scores = dict(sorted(scores.items(), key=lambda score: score[1], reverse=True))
+        return sorted_scores
     
     def find_best_teammate(self, type: str=None, stat: str=None, stat_value: int=None) -> list[str]:
         self.get_pagerank(self.graph)  # need to add sorting by PageRank scores
@@ -43,10 +45,12 @@ if __name__ == '__main__':
     training_data = all_data.get_tiering_data()
     pkmn_tiers = PokemonTiers(training_data)
 
-    results = pkmn_tiers.get_tiers(True)
+    tiers = pkmn_tiers.get_tiers(True)
 
     graph = PokemonGraph()
-    edge_data = all_data.get_all_data()
+    edge_data = all_data.get_team_data()
 
-    graph.build_graph(edge_data, pkmn_tiers)
+    graph.build_graph(edge_data, tiers)
+    pr = graph.get_pagerank(graph)
+    print(pr)
 
