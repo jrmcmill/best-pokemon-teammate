@@ -33,6 +33,7 @@ class PokemonGraph:
     def get_pagerank(graph: nx.DiGraph=None) -> dict[str: float]:
         scores = nx.pagerank(graph.graph)
         sorted_scores = dict(sorted(scores.items(), key=lambda score: score[1], reverse=True))
+        
         return sorted_scores
     
     def find_best_teammate(self, type: str=None, stat: str=None, stat_value: int=None) -> list[str]:

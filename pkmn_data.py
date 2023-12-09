@@ -63,20 +63,20 @@ class PokemonData:
         return teammate_data
 
 
-# # RUN TESTS ON GETTING THE DATA
-# charmander = pb.pokemon('charmander')
-# print(charmander.types[0].type.name)  # get its primary type
-# print(charmander.stats[0].stat.name)  # get its 0-index stat name
-# print(charmander.stats[0].base_stat)  # get its 0-index base stat
-
-# regulation_pull = requests.get(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
-# regulation_data = regulation_pull.json()
-# # get its teammates
-# print(regulation_data['data']['Mamoswine']['Teammates'])
-# # get its GXE of top, top 1%, top 5%
-# print(regulation_data['data']['Mamoswine']['Viability Ceiling'][1:])
-
 if __name__ == '__main__':
+    # # RUN TESTS ON GETTING THE DATA
+    # charmander = pb.pokemon('charmander')
+    # print(charmander.types[0].type.name)  # get its primary type
+    # print(charmander.stats[0].stat.name)  # get its 0-index stat name
+    # print(charmander.stats[0].base_stat)  # get its 0-index base stat
+
+    # regulation_pull = requests.get(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
+    # regulation_data = regulation_pull.json()
+    # # get its teammates
+    # print(regulation_data['data']['Mamoswine']['Teammates'])
+    # # get its GXE of top, top 1%, top 5%
+    # print(regulation_data['data']['Mamoswine']['Viability Ceiling'][1:])
+    
     all_data = PokemonData(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
 
     print(all_data.get_type('Mamoswine'))  # ice
