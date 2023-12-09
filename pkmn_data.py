@@ -52,6 +52,9 @@ class PokemonData:
             all_pokemon_gxe.append(current_pkmn)
         
         return np.array(all_pokemon_gxe, dtype=object)
+    
+    def get_all_data(self) -> dict[str: list[str]]:
+        return self.ps_data['data']
 
 
 # # RUN TESTS ON GETTING THE DATA
