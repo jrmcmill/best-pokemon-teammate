@@ -18,7 +18,7 @@ class PokemonGraph:
                 self.graph[teammate][pokemon]['weight'] = tiers[pokemon]
     
     @staticmethod
-    def get_pagerank(graph: nx.DiGraph=None):
+    def get_pagerank(graph: nx.DiGraph=None) -> dict[str: float]:
         return nx.pagerank(graph)
     
     def find_best_teammate(self, type: str=None, stat: str=None, stat_value: int=None) -> list[str]:
