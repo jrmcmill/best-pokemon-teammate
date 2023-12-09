@@ -1,8 +1,20 @@
 '''
 Create a network of Pokemon whose edges indicate teammates
 '''
+BASE_URL = 'https://www.smogon.com/stats/'
+TEST_MONTH_URL = '2023-11/'
+TEST_FORMAT_URL = 'chaos/gen9vgc2023regulationebo3-1760.json'
+STAT_TO_INDEX = {'hp': 0,
+                 'attack': 1,
+                 'defense': 2,
+                 'special attack': 3,
+                 'special defense': 4,
+                 'speed': 5}
+
+
 import networkx as nx
 from pkmn_data import PokemonData
+from tiering import PokemonTiers
 
 
 class PokemonGraph:
