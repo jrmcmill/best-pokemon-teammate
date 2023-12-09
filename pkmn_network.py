@@ -39,5 +39,14 @@ class PokemonGraph:
 
 
 if __name__ == '__main__':
-    pass
+    all_data = PokemonData(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
+    training_data = all_data.get_tiering_data()
+    pkmn_tiers = PokemonTiers(training_data)
+
+    results = pkmn_tiers.get_tiers(True)
+
+    graph = PokemonGraph()
+    edge_data = all_data.get_all_data()
+
+    graph.build_graph(edge_data, pkmn_tiers)
 
