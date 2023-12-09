@@ -70,7 +70,7 @@ class PokemonTiers:
         name_tier_mapping = {}
 
         if plotting:
-            fig = plt.figure(figsize=(10, 8))
+            fig = plt.figure(figsize=(7.25, 5.5))
             ax = fig.add_subplot(111, projection='3d')
             cmap = plt.cm.get_cmap('viridis', self.num_tiers)
 
