@@ -14,6 +14,8 @@ STAT_TO_INDEX = {'hp': 0,
 
 import pokebase as pb
 import requests
+from numpy import ndarray
+import numpy as np
 
 
 class PokemonData:
@@ -36,7 +38,20 @@ class PokemonData:
         return list(self.ps_data['data'][pokemon.lower().capitalize()]['Teammates'].keys())
 
     def get_gxe_stats(self, pokemon: str=None) -> list[int]:
-        return self.ps_data['data'][pokemon.lower().capitalize()]['Viability Ceiling'][1:]
+        #return self.ps_data['data'][pokemon.lower().capitalize()]['Viability Ceiling'][1:]
+        return self.ps_data['data'][pokemon]['Viability Ceiling'][1:]
+    
+    def get_tiering_data(self) -> ndarray:
+        all_pokemon_gxe = []
+
+        for pokemon in self.get_all_pokemon():
+            current_pkmn = [pokemon]
+            stats = self.get_gxe_stats(pokemon)
+            current_pkmn.extend(stats)
+
+            all_pokemon_gxe.append(current_pkmn)
+        
+        return np.array(all_pokemon_gxe, dtype=object)
 
 
 # # RUN TESTS ON GETTING THE DATA
@@ -59,6 +74,8 @@ if __name__ == '__main__':
     print(all_data.get_base_stat('MamoswinE', 'HP'))  # 110
     print(all_data.get_bst('MAMOSWINE'))  # 530
     print(all_data.get_teammates('Mamoswine'))  # list of Pokemon
-    print(all_data.get_gxe_stats('mamoswine'))  # 3 GXEs
+    #print(all_data.get_gxe_stats('mamoswine'))  # 3 GXEs
     print(all_data.get_all_pokemon())  # list of all Pokemon in format
+
+    print(all_data.get_tiering_data())
 
