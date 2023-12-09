@@ -1,2 +1,4 @@
 .DS_Store
 __pycache__/pkmn_data.cpython-39.pyc
+__pycache__/pkmn_network.cpython-39.pyc
+__pycache__/pkmn_tiering.cpython-39.pyc
