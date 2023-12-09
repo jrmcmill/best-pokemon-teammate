@@ -3,7 +3,9 @@ Create a network of Pokemon whose edges indicate teammates
 '''
 BASE_URL = 'https://www.smogon.com/stats/'
 TEST_MONTH_URL = '2023-11/'
+#TEST_MONTH_URL = '2020-06/'
 TEST_FORMAT_URL = 'chaos/gen9vgc2023regulationebo3-1760.json'
+#TEST_FORMAT_URL = 'chaos/gen8vgc2020-1760.json'
 STAT_TO_INDEX = {'hp': 0,
                  'attack': 1,
                  'defense': 2,
@@ -17,34 +19,42 @@ import numpy as np
 from pkmn_data import PokemonData
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class PokemonTiers:
     def __init__(self, gxe_data: ndarray=None) -> None:
         self.gxe_data = gxe_data
         self.num_tiers = self.get_num_tiers()
-        self.model = KMeans(self.num_tiers)
+        self.model = KMeans(self.num_tiers, n_init='auto')
 
     def get_num_tiers(self) -> int:
-        X = self.gxe_data
+        X = self.gxe_data[:, 1:].astype(float)  # e.g., 65, 73, 81 per row
         best_score = -1
         optimal_num_tiers = 1
 
         for n_clusters in range(2, 10):
-            model = KMeans(n_clusters, max_iter=50, n_init=1)
+            model = KMeans(n_clusters, max_iter=50, n_init='auto')
             labels = model.fit_predict(X)
             score = silhouette_score(X, labels)
 
-            if score > best_score:
-                best_score = score
-                optimal_num_tiers = n_clusters
+            if n_clusters == 2:  # must be significantly better
+                threshold = 2  # to pick 2 over 3
+                if score > best_score + threshold:
+                    best_score = score
+                    optimal_num_tiers = n_clusters
+            else:  # else continue past 2 clusters
+                if score > best_score:
+                    best_score = score
+                    optimal_num_tiers = n_clusters
         
         return optimal_num_tiers
 
-    def get_tiers(self) -> dict[str: int]:
+    def get_tiers(self, plotting: bool=False) -> dict[str: int]:
         X = self.gxe_data
         pokemon_names = X[:, 0]  # e.g., 'mamoswine' per row
-        X_pokemon_gxe = X[:, 1].astype(float)  # e.g., 65, 73, 81 per row
+        X_pokemon_gxe = X[:, 1:].astype(float)  # e.g., 65, 73, 81 per row
 
         self.model.fit(X_pokemon_gxe)
 
@@ -56,18 +66,56 @@ class PokemonTiers:
             avg_gxe = np.mean(combined_avg_gxe[mask])
             tier_avg_gxe[label] = avg_gxe
         
-        sorted_tiers = sorted(tier_avg_gxe, key=tier_avg_gxe.get, reverse=True)
+        sorted_tiers = sorted(tier_avg_gxe, key=tier_avg_gxe.get)
         name_tier_mapping = {}
 
-        for label, tier in enumerate(sorted_tiers, start=self.num_tiers):
-            mask = (self.model.labels_ == label)
+        if plotting:
+            fig = plt.figure(figsize=(10, 8))
+            ax = fig.add_subplot(111, projection='3d')
+            cmap = plt.cm.get_cmap('viridis', self.num_tiers)
+
+        for label, tier in enumerate(sorted_tiers, start=1):
+            mask = (self.model.labels_ == tier)
 
             for name in pokemon_names[mask]:
-                name_tier_mapping[name] = tier
+                name_tier_mapping[name] = label
+            
+            if plotting:
+                ax.scatter(
+                    X_pokemon_gxe[mask, 0], X_pokemon_gxe[mask, 1], X_pokemon_gxe[mask, 2],
+                    label=f'tier {label}', c=[cmap(label / (self.num_tiers + 1))]
+                )
+
+                centroid = self.model.cluster_centers_[tier]
+                ax.scatter(
+                    centroid[0], centroid[1], centroid[2], s=200, marker='o',
+                    label=f'centroid tier {label}', c=[cmap(label / (self.num_tiers + 1))], edgecolors='black'
+                )
+        
+        if plotting:
+            ax.set_xlabel('top player')
+            ax.set_ylabel('top 1% player')
+            ax.set_zlabel('top 5% player')
+            ax.set_title('Tiers of Pokémon (tier 1 is worst, tier N is best)')
+
+            handles, labels = ax.get_legend_handles_labels()
+            legend_elements = [(handle, label) for handle, label in zip(handles, labels)]
+
+            fig.legend(*zip(*legend_elements[::-1]), loc='upper right', bbox_to_anchor=(1, 1))
+
+            
+            plt.show()
+            plt.close()
 
         return name_tier_mapping
 
 
 if __name__ == '__main__':
-    pass
+    all_data = PokemonData(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
+    training_data = all_data.get_tiering_data()
+    pkmn_tiers = PokemonTiers(training_data)
+
+    results = pkmn_tiers.get_tiers(True)
+
+    print(results)
 
