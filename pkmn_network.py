@@ -14,7 +14,7 @@ STAT_TO_INDEX = {'hp': 0,
 
 import networkx as nx
 from pkmn_data import PokemonData
-from tiering import PokemonTiers
+from pkmn_tiering import PokemonTiers
 
 
 class PokemonGraph:
