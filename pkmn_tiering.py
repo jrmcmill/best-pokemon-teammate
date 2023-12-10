@@ -20,7 +20,7 @@ from pkmn_data import PokemonData
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
 
 
 class PokemonTiers:
@@ -83,7 +83,7 @@ class PokemonTiers:
             if plotting:
                 ax.scatter(
                     X_pokemon_gxe[mask, 0], X_pokemon_gxe[mask, 1], X_pokemon_gxe[mask, 2],
-                    label=f'tier {label}', c=[cmap(label / (self.num_tiers + 1))]
+                    label=f'pokémon of tier {label}', c=[cmap(label / (self.num_tiers + 1))]
                 )
 
                 centroid = self.model.cluster_centers_[tier]
