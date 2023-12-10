@@ -23,19 +23,44 @@ import matplotlib.pyplot as plt
 
 
 class PokemonTiers:
+    '''
+        A class for determining Pokemon tiers based on their Viability Ceiling scores.
+
+        Attributes:
+        - gxe_data (ndarray): NumPy array containing Pokemon names and their corresponding GXE scores.
+        - num_tiers (int): The optimal number of tiers determined by the KMeans clustering algorithm.
+        - model (KMeans): The KMeans clustering model.
+
+        Methods:
+        - __init__(gxe_data: ndarray=None): Initializes the PokemonTiers class with GXE data and sets up the clustering model.
+        - get_num_tiers() -> int: Determines the optimal number of tiers using the silhouette score.
+        - get_tiers(plotting: bool=False) -> dict[str: int]: Assigns Pokemon to tiers and optionally plots the results.
+    '''
     def __init__(self, gxe_data: ndarray=None) -> None:
+        '''
+            Initializes the PokemonTiers class with GXE data and sets up the clustering model.
+
+            Args:
+            - gxe_data (ndarray): NumPy array containing Pokemon names and their corresponding GXE scores.
+        '''
         self.gxe_data = gxe_data
         self.num_tiers = self.get_num_tiers()
         self.model = KMeans(self.num_tiers, n_init='auto')
 
     def get_num_tiers(self) -> int:
+        '''
+            Determines the optimal number of tiers using the silhouette score.
+
+            Returns:
+            int: The optimal number of tiers.
+        '''
         X = self.gxe_data[:, 1:].astype(float)  # e.g., 65, 73, 81 per row
-        best_score = -1
+        best_score = -1  # set best score and optimal tiers to -1
         optimal_num_tiers = 1
 
-        for n_clusters in range(2, 10):
+        for n_clusters in range(2, 10):  # test different number of tiers
             model = KMeans(n_clusters, max_iter=50, n_init='auto')
-            labels = model.fit_predict(X)
+            labels = model.fit_predict(X)  # with silhouette metric
             score = silhouette_score(X, labels)
 
             if n_clusters == 2:  # must be significantly better
@@ -48,9 +73,18 @@ class PokemonTiers:
                     best_score = score
                     optimal_num_tiers = n_clusters
         
-        return optimal_num_tiers
+        return optimal_num_tiers  # return the number of tiers to be used
 
     def get_tiers(self, plotting: bool=False) -> dict[str: int]:
+        '''
+            Assigns Pokemon to tiers and optionally plots the results.
+
+            Args:
+            - plotting (bool): If True, plots the Pokemon tiers.
+
+            Returns:
+            dict[str: int]: A dictionary where keys are Pokemon names and values are their assigned tiers.
+        '''
         X = self.gxe_data
         pokemon_names = X[:, 0]  # e.g., 'mamoswine' per row
         X_pokemon_gxe = X[:, 1:].astype(float)  # e.g., 65, 73, 81 per row
@@ -60,13 +94,13 @@ class PokemonTiers:
         combined_avg_gxe = np.mean(X_pokemon_gxe, axis=1)
         tier_avg_gxe = {}  # for assigning combined average GXE to tiers
 
-        for label in range(self.num_tiers):
+        for label in range(self.num_tiers):  # reorder tiers by average GXE
             mask = (self.model.labels_ == label)
             avg_gxe = np.mean(combined_avg_gxe[mask])
             tier_avg_gxe[label] = avg_gxe
         
         sorted_tiers = sorted(tier_avg_gxe, key=tier_avg_gxe.get)
-        name_tier_mapping = {}
+        name_tier_mapping = {}  # and assign PKMN labels to new tiers
 
         if plotting:
             fig = plt.figure(figsize=(7.25, 5.5))
@@ -76,10 +110,10 @@ class PokemonTiers:
         for label, tier in enumerate(sorted_tiers, start=1):
             mask = (self.model.labels_ == tier)
 
-            for name in pokemon_names[mask]:
+            for name in pokemon_names[mask]:  # assign PKMN to tier
                 name_tier_mapping[name] = label
             
-            if plotting:
+            if plotting:  # and plot it with its centroid
                 ax.scatter(
                     X_pokemon_gxe[mask, 0], X_pokemon_gxe[mask, 1], X_pokemon_gxe[mask, 2],
                     label=f'pokémon of tier {label}', c=[cmap(label / (self.num_tiers + 1))]
@@ -106,7 +140,7 @@ class PokemonTiers:
             plt.show()
             plt.close()
 
-        return name_tier_mapping
+        return name_tier_mapping  # return PKMN to tier
 
 
 if __name__ == '__main__':
