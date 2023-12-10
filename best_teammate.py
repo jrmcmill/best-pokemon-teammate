@@ -32,9 +32,18 @@ from pkmn_network import PokemonGraph
 
 
 def to_api_names(names: list[str]=None) -> list[str]:
-    renamed = []
+    '''
+        Convert a list of Pokemon names to their corresponding API-compatible names.
 
-    for p in names:
+        Args:
+        - names (list[str]): List of Pokemon names.
+
+        Returns:
+        list[str]: List of Pokemon names in API-compatible format.
+    '''
+    renamed = []  # list for renamed to API PKMN
+
+    for p in names:  # handle API-specific renaming
         p = p.lower()
         p = p.replace(' ', '-')
         p = p.replace("'", '')
@@ -53,32 +62,47 @@ def to_api_names(names: list[str]=None) -> list[str]:
         
         renamed.append(p)
     
-    return renamed
+    return renamed  # return all PKMN in same order but for PKMN API
 
 def find_best_teammate(ranks: dict[str: float]=None, num_teammates: int=1, data: PokemonData=None, pokemon: str=None, typing: str=None, stat: str=None, stat_value: int=None) -> None:
-    ranked = list(ranks.keys())
+    '''
+        Find the best teammate(s) based on PageRank scores, with optional filtering by type and/or stats.
+
+        Args:
+        - ranks (dict[str: float]): Dictionary of Pokemon names and their corresponding PageRank scores.
+        - num_teammates (int): Number of best teammates to display.
+        - data (PokemonData): Instance of PokemonData class for accessing Pokemon data.
+        - pokemon (str): Base Pokemon for which to find teammates.
+        - typing (str): Type to filter Pokemon by.
+        - stat (str): Stat to filter Pokemon by.
+        - stat_value (int): Minimum value for the specified stat.
+
+        Returns:
+        None
+    '''
+    ranked = list(ranks.keys())  # get ranked by PageRank PKMN
     api_named_ranked = []
 
     if typing or stat:
         # recreate the ranked pokemon strings to work with API
         api_named_ranked = to_api_names(ranked)
 
-    if typing:
+    if typing:  # filter by PKMN type
         typing = typing.lower()
         ranked = [p for i, p in enumerate(ranked) if data.get_type(api_named_ranked[i]) == typing]
 
-    if stat and stat_value:
+    if stat and stat_value:  # filter by PKMN stat or BST
         stat = stat.lower()
         if stat == 'bst':
             ranked = [p for i, p in enumerate(ranked) if data.get_bst(api_named_ranked[i]) > stat_value]
         else:
             ranked = [p for i, p in enumerate(ranked) if data.get_base_stat(api_named_ranked[i], stat) > stat_value]
 
-    if not pokemon:
+    if not pokemon:  # show best general teammates if no base PKMN provided
         print('The best teammate(s) are:')
         print(*ranked[:num_teammates], sep='\n')
     
-    if pokemon:
+    if pokemon:  # show provided PKMN's best teammate PKMN
         print(f'The best teammate(s) for {pokemon} are:')
         print(*[p for p in ranked if p in data.get_teammates(pokemon)][:num_teammates], sep='\n')
 
