@@ -2,3 +2,9 @@
 __pycache__/pkmn_data.cpython-39.pyc
 __pycache__/pkmn_network.cpython-39.pyc
 __pycache__/pkmn_tiering.cpython-39.pyc
+graph.html
+lib/bindings/utils.js
+lib/tom-select/tom-select.complete.min.js
+lib/tom-select/tom-select.css
+lib/vis-9.1.2/vis-network.css
+lib/vis-9.1.2/vis-network.min.js
