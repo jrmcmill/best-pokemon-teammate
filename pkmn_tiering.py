@@ -20,7 +20,6 @@ from pkmn_data import PokemonData
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
 
 
 class PokemonTiers:
