@@ -24,6 +24,8 @@ class PokemonGraph:
     def build_graph(self, edges: dict[str: list[str]], tiers: dict[str: int]) -> None:
         for pokemon in edges.keys():
             for teammate in edges[pokemon]:
+                if teammate == 'empty':
+                    continue
                 # add edge from teammate to pokemon
                 self.graph.add_edge(teammate, pokemon)
                 # add weight based on pokemon tier
