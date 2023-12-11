@@ -85,10 +85,6 @@ def find_teammate() -> bool:
             print('ERROR: Invalid entry! Please try again...')
 
             return True
-    else:
-        print('ERROR: invalid entry! Please try again...')
-
-        return True
     
     num_teammates = input('Enter how many teammates you want: ')
 
