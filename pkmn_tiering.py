@@ -129,7 +129,7 @@ class PokemonTiers:
             ax.set_xlabel('top player')
             ax.set_ylabel('top 1% player')
             ax.set_zlabel('top 5% player')
-            ax.set_title('Tiers of Pokémon (tier 1 is worst, tier N is best)')
+            ax.set_title('Tiers of Pokémon\n(tier 1 is worst, tier N is best)')
 
             handles, labels = ax.get_legend_handles_labels()
             legend_elements = [(handle, label) for handle, label in zip(handles, labels)]
