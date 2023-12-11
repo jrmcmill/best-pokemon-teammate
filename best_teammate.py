@@ -93,18 +93,24 @@ def find_best_teammate(ranks: dict[str: float]=None, num_teammates: int=1, data:
 
     if stat and stat_value:  # filter by PKMN stat or BST
         stat = stat.lower()
+        
         if stat == 'bst':
-            ranked = [p for i, p in enumerate(ranked) if data.get_bst(api_named_ranked[i]) > stat_value]
+            ranked = [p for i, p in enumerate(ranked) if data.get_bst(api_named_ranked[i]) >= stat_value]
         else:
-            ranked = [p for i, p in enumerate(ranked) if data.get_base_stat(api_named_ranked[i], stat) > stat_value]
+            ranked = [p for i, p in enumerate(ranked) if data.get_base_stat(api_named_ranked[i], stat) >= stat_value]
 
     if not pokemon:  # show best general teammates if no base PKMN provided
         print('The best teammate(s) are:')
         print(*ranked[:num_teammates], sep='\n')
     
     if pokemon:  # show provided PKMN's best teammate PKMN
-        print(f'The best teammate(s) for {pokemon} are:')
-        print(*[p for p in ranked if p in data.get_teammates(pokemon)][:num_teammates], sep='\n')
+        try:
+            t = [p for p in ranked if p in data.get_teammates(pokemon)][:num_teammates]
+            print(f'The best teammate(s) for {pokemon} are:')
+            print(*t, sep='\n')
+        except KeyError:
+            print('The best teammate(s) are:')
+            print(*ranked[:num_teammates], sep='\n')
 
 if __name__ == '__main__':
     all_data = PokemonData(BASE_URL+TEST_MONTH_URL+TEST_FORMAT_URL)
